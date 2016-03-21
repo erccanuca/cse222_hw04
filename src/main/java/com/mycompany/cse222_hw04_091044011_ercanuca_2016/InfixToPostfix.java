@@ -8,6 +8,7 @@ package com.mycompany.cse222_hw04_091044011_ercanuca_2016;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
 /**
  * This class covert to infix to postfix
@@ -16,22 +17,6 @@ import java.util.StringTokenizer;
  */
 public class InfixToPostfix {
 
-    // Nested Class
-    /**
-     * Class to report a syntax error.
-     */
-    public static class SyntaxErrorException
-            extends Exception {
-
-        /**
-         * Construct a SyntaxErrorException with the specified message.
-         *
-         * @param message The message
-         */
-        SyntaxErrorException(String message) {
-            super(message);
-        }
-    }
     /**
      * Stack of operators.
      */
@@ -48,17 +33,24 @@ public class InfixToPostfix {
      * The precedence of operators, matches order in OPERATORS
      */
     private static final int[] PRECEDENCE = {1, 1, 2, 2, 0};
-
+    
+    /**
+     * Default constructor
+     * Create objects
+     */
+    public InfixToPostfix(){
+        operandStack = new Stack<>();
+        postfix = new StringBuilder();
+    }
     /**
      * Exracts and processes each token in infix and returns the equivalent
      * postfix string.
      *
      * @param infix is token take from file
-     * @return the equivalent postfix string throws SyntaxErrorException
+     * @return the equivalent postfix string 
+     * throws com.mycompany.cse222_hw04_091044011_ercanuca_2016.InfixToPostfix.SyntaxErrorException
      */
-    public String convert(String infix) throws SyntaxErrorException {
-        operandStack = new Stack<>();
-        postfix = new StringBuilder();
+    public String convert(String infix){
         StringTokenizer infixToken = new StringTokenizer(infix);
         try {
             // process each token in the infix string
@@ -74,7 +66,7 @@ public class InfixToPostfix {
                 else if (isOperator(firsChar)) {
                     processOperator(firsChar);
                 } else {
-                    throw new SyntaxErrorException("Unexpected character encountered" + firsChar);
+                    throw new SyntaxException("Unexpected character encountered" + firsChar);
                 }
             } // end while
             //pop any remaining operators and
@@ -87,7 +79,7 @@ public class InfixToPostfix {
             // assert: Stack is empty, return result
             return postfix.toString();
         } catch (EmptyStackException exp) {
-            throw new SyntaxErrorException("Syntax error: The stack is empty.");
+            throw new SyntaxException("Syntax error: The stack is empty.");
         }
     }
 

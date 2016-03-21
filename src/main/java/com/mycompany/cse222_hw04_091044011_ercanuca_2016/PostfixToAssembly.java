@@ -9,6 +9,7 @@ import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
 /**
  * This Class Conver postfix to assembly code
@@ -16,22 +17,6 @@ import java.util.StringTokenizer;
  */
 public class PostfixToAssembly {
 
-    // Nested Class
-    /**
-     * Class to report a syntax error.
-     */
-    public static class SyntaxErrorException
-            extends Exception {
-
-        /**
-         * Construct a SyntaxErrorException with the specified message.
-         *
-         * @param message The message
-         */
-        SyntaxErrorException(String message) {
-            super(message);
-        }
-    }
     /**
      * Saving all tokens
      */
@@ -52,17 +37,22 @@ public class PostfixToAssembly {
      * Save t0, t1 etc. indexes
      */
     private static int tempsIndex = 0;
-
+    
     /**
-     * This method create objects for our data and,
+     * Default constructor
+     * Create objects for our data and,
+     */
+    public PostfixToAssembly(){
+        postfixes = new LinkedList<>();
+        assembly = new StringBuilder();
+        print = new LinkedList();
+    }
+    /**
      * save all tokens to linkedlist
      * @param postfix calculated InfixToPostfix class, it is postfix string.
      * throws com.mycompany.cse222_hw04_091044011_ercanuca_2016.PostfixToAssembly.SyntaxErrorException 
      */
-    public void saveToLinkedList(String postfix) throws SyntaxErrorException {
-        postfixes = new LinkedList<>();
-        assembly = new StringBuilder();
-        print = new LinkedList();
+    public void saveToLinkedList(String postfix){
         /**
          * Take a tokenizer and save the postfix string
          */
@@ -85,7 +75,7 @@ public class PostfixToAssembly {
                
             } // end while 
         } catch (Exception exp) {
-            throw new SyntaxErrorException("Syntax error: The stack is empty.");
+            throw new SyntaxException("Syntax error: no tokens.");
         }
     }
     /**
