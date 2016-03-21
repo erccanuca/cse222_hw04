@@ -10,30 +10,35 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 
 /**
+ * This class covert to infix to postfix
  *
  * @author ercan
  */
 public class InfixToPostfix {
-    
-  // Nested Class
-  /** Class to report a syntax error. */
-  public static class SyntaxErrorException
-      extends Exception {
-    /** Construct a SyntaxErrorException with the specified
-        message.
-        @param message The message
-     */
-    SyntaxErrorException(String message) {
-      super(message);
-    }
-  }
+
+    // Nested Class
     /**
-    * Stack of operators.
-    */
+     * Class to report a syntax error.
+     */
+    public static class SyntaxErrorException
+            extends Exception {
+
+        /**
+         * Construct a SyntaxErrorException with the specified message.
+         *
+         * @param message The message
+         */
+        SyntaxErrorException(String message) {
+            super(message);
+        }
+    }
+    /**
+     * Stack of operators.
+     */
     private Stack<Character> operandStack;
     /**
-    * The postfix string
-    */
+     * The postfix string
+     */
     private StringBuilder postfix;
     /**
      * The operators
@@ -42,74 +47,73 @@ public class InfixToPostfix {
     /**
      * The precedence of operators, matches order in OPERATORS
      */
-    private static final int[] PRECEDENCE = {1,1,2,2,0};
-    
+    private static final int[] PRECEDENCE = {1, 1, 2, 2, 0};
+
     /**
-     * Exracts and processes each token in infix
-     * and returns the equivalent postfix string.
+     * Exracts and processes each token in infix and returns the equivalent
+     * postfix string.
+     *
      * @param infix is token take from file
-     * @return the equivalent postfix string
-     * throws SyntaxException
+     * @return the equivalent postfix string throws SyntaxErrorException
      */
-    public String convert(String infix) throws SyntaxErrorException{
+    public String convert(String infix) throws SyntaxErrorException {
         operandStack = new Stack<>();
         postfix = new StringBuilder();
         StringTokenizer infixToken = new StringTokenizer(infix);
         try {
-                // process each token in the infix string
-                while(infixToken.hasMoreTokens())
-                {
-                    String nextToken = infixToken.nextToken();
-                    char firsChar = nextToken.charAt(0);
-                    // is it operand?
-                    if(Character.isJavaIdentifierPart(firsChar)
-                       || Character.isDigit(firsChar)){
-                        postfix.append(nextToken);
-                        postfix.append(' ');
-                    }// is it an operator?
-                    else if(isOperator(firsChar)){
-                        processOperator(firsChar);
-                    }else{
-                        throw new SyntaxErrorException("Unexpected character encountered"+firsChar);
-                    }
-                } // end while
-                //pop any remaining operators and
-                //and append them to postfix
-                while(!operandStack.empty()){
-                    char op = operandStack.pop();
-                    postfix.append(op);
+            // process each token in the infix string
+            while (infixToken.hasMoreTokens()) {
+                String nextToken = infixToken.nextToken();
+                char firsChar = nextToken.charAt(0);
+                // is it operand?
+                if (Character.isJavaIdentifierPart(firsChar)
+                        || Character.isDigit(firsChar)) {
+                    postfix.append(nextToken);
                     postfix.append(' ');
+                }// is it an operator?
+                else if (isOperator(firsChar)) {
+                    processOperator(firsChar);
+                } else {
+                    throw new SyntaxErrorException("Unexpected character encountered" + firsChar);
                 }
-                // assert: Stack is empty, return result
-                return postfix.toString();
+            } // end while
+            //pop any remaining operators and
+            //and append them to postfix
+            while (!operandStack.empty()) {
+                char op = operandStack.pop();
+                postfix.append(op);
+                postfix.append(' ');
             }
-            catch (EmptyStackException exp) {
-                throw new SyntaxErrorException("Syntax error: The stack is empty."); 
-                }
+            // assert: Stack is empty, return result
+            return postfix.toString();
+        } catch (EmptyStackException exp) {
+            throw new SyntaxErrorException("Syntax error: The stack is empty.");
+        }
     }
+
     /**
      * Processes operator op by updating operandStack
-     * @param op is the operator
-     * throws EmptyStackException
+     *
+     * @param op is the operator throws EmptyStackException
      */
-    private void processOperator(char op){
-        if(operandStack.isEmpty()){
+    private void processOperator(char op) {
+        if (operandStack.isEmpty()) {
             operandStack.push(op);
-        }else{
+        } else {
             // peek operator from stack and 
             // let topOp be top operator
             char topOp = operandStack.peek();
-            if(precedence(op) > precedence(topOp)){
+            if (precedence(op) > precedence(topOp)) {
                 operandStack.push(op);
-            }else{
+            } else {
                 // pop all stacked operators with equal
                 // or higher precedence than op
-                while(!operandStack.isEmpty()
-                        && precedence(op) <= precedence(topOp)){
+                while (!operandStack.isEmpty()
+                        && precedence(op) <= precedence(topOp)) {
                     operandStack.pop();
                     postfix.append(topOp);
                     postfix.append(' ');
-                    if(!operandStack.isEmpty()){
+                    if (!operandStack.isEmpty()) {
                         // reset topOp
                         topOp = operandStack.peek();
                     }
@@ -120,37 +124,24 @@ public class InfixToPostfix {
             }
         }
     }
-    
+
     /**
      * Precesence of operators comparison
+     *
      * @param op operator
      * @return the precedence of current operator.
      */
-    private int precedence(char op){
+    private int precedence(char op) {
         return PRECEDENCE[OPERATORS.indexOf(op)];
     }
+
     /**
      * Character is operator method
+     *
      * @param ch character type
      * @return true if it operator otherwise false.
      */
-    private boolean isOperator(char ch){
-        return OPERATORS.indexOf(ch)!=-1;
+    private boolean isOperator(char ch) {
+        return OPERATORS.indexOf(ch) != -1;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
