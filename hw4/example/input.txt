@@ -2,5 +2,5 @@ a = 4
 b = 3
 c = 12
 b = a - b * 3
-c = A / 3 * b + 21 
+c = a / 3 * b + 21 
 print c
