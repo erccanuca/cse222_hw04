@@ -36,11 +36,9 @@ public class InfixToPostfix {
     
     /**
      * Default constructor
-     * Create objects
      */
     public InfixToPostfix(){
-        operandStack = new Stack<>();
-        postfix = new StringBuilder();
+       
     }
     /**
      * Exracts and processes each token in infix and returns the equivalent
@@ -51,6 +49,8 @@ public class InfixToPostfix {
      * throws com.mycompany.cse222_hw04_091044011_ercanuca_2016.InfixToPostfix.SyntaxErrorException
      */
     public String convert(String infix){
+        operandStack = new Stack<>();
+        postfix = new StringBuilder();
         StringTokenizer infixToken = new StringTokenizer(infix);
         try {
             // process each token in the infix string

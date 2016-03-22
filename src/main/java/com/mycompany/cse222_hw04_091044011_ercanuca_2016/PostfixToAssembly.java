@@ -40,12 +40,9 @@ public class PostfixToAssembly {
     
     /**
      * Default constructor
-     * Create objects for our data and,
      */
     public PostfixToAssembly(){
-        postfixes = new LinkedList<>();
-        assembly = new StringBuilder();
-        print = new LinkedList();
+        
     }
     /**
      * save all tokens to linkedlist
@@ -53,6 +50,9 @@ public class PostfixToAssembly {
      * throws com.mycompany.cse222_hw04_091044011_ercanuca_2016.PostfixToAssembly.SyntaxErrorException 
      */
     public void saveToLinkedList(String postfix){
+        postfixes = new LinkedList<>();
+        assembly = new StringBuilder();
+        print = new LinkedList();
         /**
          * Take a tokenizer and save the postfix string
          */
@@ -82,14 +82,17 @@ public class PostfixToAssembly {
      * This method convert postfix data that is the saved on linkedlist
      * to assembly code.
      * @return assembly string lines.
+     * throws java.lang.Exception
      */
-    public String convertToAssembly() {
+    public String convertToAssembly() throws Exception,IllegalArgumentException {
         int saveToStoreIndex = 0; // save first index
         // search on the linkedlist and converting to assembly
         for (int i = 0; i < postfixes.size(); ++i) {
             // find new integer
             if (isDigit(postfixes.get(i))) {
                 tempsIndex++;
+                if(tempsIndex>=9)
+                    throw new Exception("Should you index between $t0-$t8!!");
             } // like a = 45 size = 4 
             else if (postfixes.size() == 4 && postfixes.get(i) == '=') {
                 // appended computed datas
@@ -104,10 +107,10 @@ public class PostfixToAssembly {
             } // like a = 4 size =  3
             else if (postfixes.size() == 3 && postfixes.get(i) == '=') {
                 assembly.append("li $t").append(tempsIndex - 1).append(",")
-                        .append(postfixes.get(tempsIndex))
+                        .append(postfixes.get(i-1))
                         .append("\t\t\t#").append(postfixes.get(saveToStoreIndex))
                         .append("=")
-                        .append(postfixes.get(tempsIndex))
+                        .append(postfixes.get(i-1))
                         .append(" in $t")
                         .append(tempsIndex - 1).append(".\n");
                 
@@ -116,10 +119,10 @@ public class PostfixToAssembly {
                 // if it is add with one digit
                 if (isDigit(postfixes.get(i + 1))) {
                     assembly.append("li $t").append(tempsIndex).append(",")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append("\t\t\t#").append(postfixes.get(saveToStoreIndex))
                             .append("=")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append(" in $t")
                             .append(tempsIndex).append(".\n");
                 }
@@ -154,10 +157,10 @@ public class PostfixToAssembly {
                 // if it is add with one digit
                 if (isDigit(postfixes.get(i + 1))) {
                     assembly.append("li $t").append(tempsIndex).append(",")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append("\t\t\t#").append(postfixes.get(saveToStoreIndex))
                             .append("=")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append(" in $t")
                             .append(tempsIndex).append(".\n");
 
@@ -206,26 +209,30 @@ public class PostfixToAssembly {
                 }
                 // when end of string
                 if (postfixes.get(i + 1) == '=' && postfixes.size() > 5) {
-                    assembly.append("mult $t").append(tempsIndex - 1)
+                    assembly.append("mult $t").append(tempsIndex-1)
                             .append(",$t").append(tempsIndex).append("\n");
-                    assembly.append("mflo $t").append(tempsIndex).append("\n");
+                    assembly.append("mflo $t").append(tempsIndex-1).append("\n");
                 // normal multiply
                 } else {
-                    assembly.append("mult $t").append(tempsIndex - 3)
+                    assembly.append("mult $t").append(tempsIndex - 1)
                             .append(",$t").append(tempsIndex - 2).append("\n");
-                    assembly.append("mflo $t").append(tempsIndex - 1).append("\n");
+                    assembly.append("mflo $t").append(tempsIndex - 2).append("\n");
                 }
                 // index decreasing for calculation of temprary indexes.
                 tempsIndex--;
             // to calculate divide
             } else if (postfixes.get(i) == '/') {
                 // if it is dividing with digit
+
+                if((postfixes.get(i-1)==48)){
+                    throw new IllegalArgumentException("Argument 'divisor' is 0");
+                }
                 if (isDigit(postfixes.get(i + 1))) {
                     assembly.append("li $t").append(tempsIndex).append(",")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append("\t\t\t#").append(postfixes.get(saveToStoreIndex))
                             .append("=")
-                            .append(postfixes.get(tempsIndex + 1))
+                            .append(postfixes.get(i + 1))
                             .append(" in $t")
                             .append(tempsIndex).append(".\n");
 
@@ -237,12 +244,12 @@ public class PostfixToAssembly {
                     assembly.append("mflo $t").append(tempsIndex + 2).append("\n");
                 // normal divide
                 } else {
-                    assembly.append("div $t").append(tempsIndex - 3)
-                            .append(",$t").append(tempsIndex - 2).append("\n");
-                    assembly.append("mflo $t").append(tempsIndex - 1).append("\n");
+                    assembly.append("div $t").append(tempsIndex - 2)
+                            .append(",$t").append(tempsIndex - 1).append("\n");
+                    assembly.append("mflo $t").append(tempsIndex).append("\n");
                 }
                 // index decreasing for calculation of temprary indexes.
-                tempsIndex--;
+                //tempsIndex--;
             // the end string printing
             } else if (i == 0 && print.get(i).equals("print")) {
                 assembly.append("move $a0").append(",$t")
@@ -270,4 +277,12 @@ public class PostfixToAssembly {
         return OPERATORS.indexOf(ch) != -1;
     }
 
+    public LinkedList<Character> getPostfixes() {
+        return postfixes;
+    }
+
+    public void setPostfixes(LinkedList<Character> postfixes) {
+        this.postfixes = postfixes;
+    }
+    
 }
