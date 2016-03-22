@@ -6,7 +6,6 @@
 package com.mycompany.cse222_hw04_091044011_ercanuca_2016;
 
 import static java.lang.Character.isDigit;
-import static java.lang.Character.isLetter;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
@@ -47,9 +46,9 @@ public class PostfixToAssembly {
     /**
      * save all tokens to linkedlist
      * @param postfix calculated InfixToPostfix class, it is postfix string.
-     * throws com.mycompany.cse222_hw04_091044011_ercanuca_2016.PostfixToAssembly.SyntaxErrorException 
+     * @throws SyntaxException Syntax error: no tokens.
      */
-    public void saveToLinkedList(String postfix){
+    public void saveToLinkedList(String postfix) throws SyntaxException{
         postfixes = new LinkedList<>();
         assembly = new StringBuilder();
         print = new LinkedList();
@@ -74,17 +73,19 @@ public class PostfixToAssembly {
                 print.add(nextToken);
                
             } // end while 
-        } catch (Exception exp) {
+        } catch (SyntaxException exp) {
             throw new SyntaxException("Syntax error: no tokens.");
         }
     }
     /**
      * This method convert postfix data that is the saved on linkedlist
      * to assembly code.
+     * @throws IndexOutOfBoundsException Should you index between $t0-$t8!!
+     * @throws IllegalArgumentException Divion by zero
      * @return assembly string lines.
-     * throws java.lang.Exception
+     
      */
-    public String convertToAssembly() throws Exception,IllegalArgumentException {
+    public String convertToAssembly() throws IndexOutOfBoundsException,IllegalArgumentException {
         int saveToStoreIndex = 0; // save first index
         // search on the linkedlist and converting to assembly
         for (int i = 0; i < postfixes.size(); ++i) {
@@ -92,7 +93,7 @@ public class PostfixToAssembly {
             if (isDigit(postfixes.get(i))) {
                 tempsIndex++;
                 if(tempsIndex>=9)
-                    throw new Exception("Should you index between $t0-$t8!!");
+                    throw new IndexOutOfBoundsException("Should you index between $t0-$t8!!");
             } // like a = 45 size = 4 
             else if (postfixes.size() == 4 && postfixes.get(i) == '=') {
                 // appended computed datas
@@ -276,11 +277,17 @@ public class PostfixToAssembly {
     private boolean isOperator(char ch) {
         return OPERATORS.indexOf(ch) != -1;
     }
-
+    /**
+     * Linked List getter method
+     * @return current linkedlist
+     */
     public LinkedList<Character> getPostfixes() {
         return postfixes;
     }
-
+    /**
+     * LinkedList Setter method
+     * @param postfixes assign new LinkedList object.
+     */
     public void setPostfixes(LinkedList<Character> postfixes) {
         this.postfixes = postfixes;
     }
